@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <div class="cabezera">
+            <h2>Consumo de coches</h2>
+        </div>
+    </header>
+            <section class="bloque">
+            <div class="suv">
+            <table id="tabla-suv">
+                <tr>
+                    <th>Modelo</th>
+                    <th>Consumo L/100km</th>
+                </tr>
+                <tr>
+                    <td>Ford Puma</td>
+                    <td>6,35</td>
+                </tr>
+                <tr>
+                    <td>Nissan Qashqai</td>
+                    <td>7,89</td>
+                </tr>
+                <tr>
+                    <td>Peugeot 2008</td>
+                    <td>8,22</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="compacto">
+            <table id="tabla-compacto">
+                <tr>
+                    <th>Modelo</th>
+                    <th>Consumo L/100km</th>
+                </tr>
+                <tr>
+                    <td>Toyota Corolla</td>
+                    <td>5,40</td>
+                </tr>
+                <tr>
+                    <td>Honda Civic</td>
+                    <td>6,58</td>
+                </tr>
+                <tr>
+                    <td>Mazda 3</td>
+                    <td>6,42</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="utilitario">
+            <table id="tabla-utilitario">
+                <tr>
+                    <th>Modelo</th>
+                    <th>Consumo L/100km</th>
+                </tr>
+                <tr>
+                    <td>Renault Clio</td>
+                    <td>5,2</td>
+                </tr>
+                <tr>
+                    <td>Opel Corsa</td>
+                    <td>5,1</td>
+                </tr>
+                <tr>
+                    <td>Peugeot 208</td>
+                    <td>4,6</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+    <section>
+        <div class="miBoton">
+            <button id="miBoton">Hola, JavaScript</button>
+        </div>
+    </section>
+    <section class="formulario">
+        <form action="#" method="post" target="_blank">
+            <h2>Añade un coche</h2>
+            <fieldset>
+                <ul>
+                    <li>
+                        <label for="name">Modelo de coche:</label>
+                        <input type="text" name="name" placeholder="Pon modelo de coche" id="name" required>
+                        
+                    </li>  
+                    <li>
+                        <label for="name">Categoría del coche:</label>
+                        <input type="text" name="name" placeholder="Ej: Suv, compacto, utilitario..." id="categoria" required>
+                    </li>
+                    <li>
+                        <label for="name">Consumo del coche en litros/100KM:</label>
+                        <input type="number" placeholder="5.3" id="consumo" required>
+                    </li>
+                </ul>
+            </fieldset>
+                    <div class="boton">
+                        <input id= "envio" type="submit" value="Enviar">
+                    </div>
+            <div id="mensaje" class="mensaje"></div>
+    </section>
+<script src="./js/prueba.js"></script>
+</body>
+</html>
