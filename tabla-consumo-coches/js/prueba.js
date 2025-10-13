@@ -9,7 +9,7 @@ boton.addEventListener("click", function() {
 const aniadir = document.querySelector("#envio");
 const modeloFormulario = document.querySelector("#name");
 const consumoFormulario = document.querySelector("#consumo");
-
+const botonOrdenar = document.querySelector("#ordenarConsumo");
 
 
 // Seleccionar las tablas de cada categoría
@@ -110,6 +110,18 @@ form.addEventListener("submit", function(event) {
     console.log("Mensaje de éxito activado:", modelo);
     mostrarMensaje(`El modelo ${modelo} ha sido añadido a la tabla.`, "exito");
 });
+
+// Manejar el clic en el botón de ordenar
+let ascendente = true;
+botonOrdenar.addEventListener("click", function() {
+
+    // Ordenar el array de coches por consumo
+    coches.sort((a,b) => ascendente ? a.consumo - b.consumo : b.consumo - a.consumo);
+    // Alternar el orden para la próxima vez
+    ascendente = !ascendente;
+    localStorage.setItem("coches", JSON.stringify(coches));
+    renderCoches();
+    mostrarMensaje("Tabla ordenada por consumo.", "exito");})
 
 // Función para mostrar mensajes temporales
 function mostrarMensaje(texto,tipo) {
