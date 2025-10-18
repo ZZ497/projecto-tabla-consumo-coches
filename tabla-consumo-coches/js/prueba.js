@@ -1,5 +1,4 @@
 // Seleccionar las partes del formulario
-const aniadir = document.querySelector("#envio");
 const modeloFormulario = document.querySelector("#name");
 const consumoFormulario = document.querySelector("#consumo");
 
@@ -39,7 +38,7 @@ form.addEventListener("submit", function(event) {
 
     // Obtener los valores del formulario
     const modelo = modeloFormulario.value.trim();
-    const consumo = parseFloat(consumoFormulario.value.trim());
+    let consumo = parseFloat(consumoFormulario.value.trim().replace(",", "."));
     const categoria = document.getElementById("categoria").value.trim().toLowerCase(); 
     
     // Validar el modelo y consumo
@@ -88,9 +87,13 @@ form.addEventListener("submit", function(event) {
         return;
     }
 
-    const nuevoCoche = { modelo, consumo, categoria }; 
+    // Añadir el nuevo coche al array y guardarlo en localStorage
+    const nuevoCoche = { modelo,
+    consumo: Number(consumo.toFixed(2)) ,
+    categoria }; 
     coches.push(nuevoCoche);
 
+    // Guardar en localStorage
     localStorage.setItem("coches", JSON.stringify(coches));
     renderCoches();
 
@@ -137,7 +140,7 @@ function renderCoches() {
         celdaModelo.textContent = coche.modelo;
 
         const celdaConsumo = document.createElement("td");
-        celdaConsumo.textContent = coche.consumo;
+        celdaConsumo.textContent = Number(coche.consumo).toFixed(2).replace(".", ",");
 
         fila.appendChild(celdaModelo);
         fila.appendChild(celdaConsumo);
@@ -197,6 +200,29 @@ document.querySelectorAll(".ordenar").forEach(boton => {
     renderCoches();
 
     // Mostrar mensaje
-    mostrarMensaje(`Tabla ${categoria} ordenada por consumo.`, "exito");
+    mostrarMensaje(`Tabla ${categoria.toLocaleUpperCase()} ordenada por consumo.`, "exito");
   });
+});
+
+// Modo oscuro
+const toggleModo = document.getElementById("modoOscuroToggle");
+const textoModo = document.getElementById("modoTexto");
+
+// Comprobar preferencia guardada
+const modoGuardado = localStorage.getItem("modoOscuro");
+if (modoGuardado === "true") {
+  document.body.classList.add("modo-oscuro");
+  toggleModo.checked = true;
+  textoModo.textContent = "Modo oscuro";
+}
+
+// Cambiar modo al pulsar
+toggleModo.addEventListener("change", () => {
+  document.body.classList.toggle("modo-oscuro");
+
+  const modoActivo = document.body.classList.contains("modo-oscuro");
+  textoModo.textContent = modoActivo ? "Modo oscuro" : "Modo claro";
+
+  // Guardar preferencia
+  localStorage.setItem("modoOscuro", modoActivo);
 });
