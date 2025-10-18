@@ -1,15 +1,8 @@
-// Alerta al pulsar el botón
-const boton = document.querySelector("#miBoton");
-
-boton.addEventListener("click", function() {
-    alert("¡Has pulsado el botón!");
-});
-
 // Seleccionar las partes del formulario
 const aniadir = document.querySelector("#envio");
 const modeloFormulario = document.querySelector("#name");
 const consumoFormulario = document.querySelector("#consumo");
-const botonOrdenar = document.querySelector("#ordenarConsumo");
+
 
 
 // Seleccionar las tablas de cada categoría
@@ -111,18 +104,6 @@ form.addEventListener("submit", function(event) {
     mostrarMensaje(`El modelo ${modelo} ha sido añadido a la tabla.`, "exito");
 });
 
-// Manejar el clic en el botón de ordenar
-let ascendente = true;
-botonOrdenar.addEventListener("click", function() {
-
-    // Ordenar el array de coches por consumo
-    coches.sort((a,b) => ascendente ? a.consumo - b.consumo : b.consumo - a.consumo);
-    // Alternar el orden para la próxima vez
-    ascendente = !ascendente;
-    localStorage.setItem("coches", JSON.stringify(coches));
-    renderCoches();
-    mostrarMensaje("Tabla ordenada por consumo.", "exito");})
-
 // Función para mostrar mensajes temporales
 function mostrarMensaje(texto,tipo) {
     const mensaje = document.querySelector("#mensaje");
@@ -137,36 +118,85 @@ function mostrarMensaje(texto,tipo) {
     }, 3000);
 }
 function renderCoches() {
-    // Limpiar las tablas
-    tablaUtilitario.innerHTML = `<tr><th>Modelo</th><th>Consumo L/100km</th></tr>`;
-    tablaCompacto.innerHTML = `<tr><th>Modelo</th><th>Consumo L/100km</th></tr>`;
-    tablaSuv.innerHTML = `<tr><th>Modelo</th><th>Consumo L/100km</th></tr>`;
-    
+    // Limpiar solo las filas de cada tabla, dejando los <th>
+    // Suponemos que en HTML cada tabla tiene <thead> y <tbody>
+    const tbodySuv = document.querySelector("#tabla-suv tbody");
+    const tbodyCompacto = document.querySelector("#tabla-compacto tbody");
+    const tbodyUtilitario = document.querySelector("#tabla-utilitario tbody");
+
+    // Limpiar filas existentes
+    tbodyUtilitario.innerHTML = "";
+    tbodyCompacto.innerHTML = "";
+    tbodySuv.innerHTML = "";
+
+    // Recorrer coches y añadir filas
     coches.forEach(coche => {
-        // Crear una nueva fila en la tabla correspondiente
         const fila = document.createElement("tr");
 
-        // Crear una celda para el modelo
         const celdaModelo = document.createElement("td");
-    
-        // Asignar el valor del modelo a la celda
         celdaModelo.textContent = coche.modelo;
 
-        //Crear una celda para el consumo
         const celdaConsumo = document.createElement("td");
+        celdaConsumo.textContent = coche.consumo;
 
-        // Asignar el valor del consumo a la celda
-        celdaConsumo.textContent = coche.consumo
-
-        // Añadir las celdas a la fila
         fila.appendChild(celdaModelo);
         fila.appendChild(celdaConsumo);
 
-        // Añadir la fila a la tabla correspondiente según la categoría
+        // Añadir la fila al tbody correspondiente
         const cat = String(coche.categoria || "").toLowerCase();
-        if (cat === "suv") tablaSuv.appendChild(fila);
-        else if (cat === "compacto") tablaCompacto.appendChild(fila);
-        else tablaUtilitario.appendChild(fila);
-    });    
+        if (cat === "suv") tbodySuv.appendChild(fila);
+        else if (cat === "compacto") tbodyCompacto.appendChild(fila);
+        else tbodyUtilitario.appendChild(fila);
+    });
 }
+renderCoches();
 
+// Ordenar por consumo individualmente por categoría 
+
+// Objeto para saber el estado de orden por categoría
+let ordenAscendente = { utilitario: true, compacto: true, suv: true };
+
+// Agregar listeners a todos los botones de ordenar
+document.querySelectorAll(".ordenar").forEach(boton => {
+  boton.addEventListener("click", () => {
+    const categoria = boton.getAttribute("data-categoria");
+
+    // Crear un índice para saber qué posiciones ocupan los coches de esta categoría
+    let indicesCategoria = [];
+    coches.forEach((c, index) => {
+      if (c.categoria === categoria) {
+        indicesCategoria.push(index);
+      }
+    });
+
+    // Extraer y ordenar solo los coches de esa categoría
+    let cochesCategoria = indicesCategoria.map(i => coches[i]);
+    
+    cochesCategoria.sort((a, b) => {
+      return ordenAscendente[categoria]
+        ? a.consumo - b.consumo
+        : b.consumo - a.consumo;
+    });
+
+    // Cambiar el estado para la próxima pulsación
+    ordenAscendente[categoria] = !ordenAscendente[categoria];
+
+    // Actualizar la flecha del botón
+    const img = boton.querySelector("img");
+    img.src = ordenAscendente[categoria]
+      ? "./img/flecha-hacia-arriba.png"
+      : "./img/flecha-hacia-abajo.png";
+
+    // Reemplazar los coches en sus posiciones originales
+    indicesCategoria.forEach((indiceOriginal, i) => {
+      coches[indiceOriginal] = cochesCategoria[i];
+    });
+
+    // Guardar en localStorage y renderizar filas
+    localStorage.setItem("coches", JSON.stringify(coches));
+    renderCoches();
+
+    // Mostrar mensaje
+    mostrarMensaje(`Tabla ${categoria} ordenada por consumo.`, "exito");
+  });
+});

@@ -13,76 +13,60 @@
         </div>
     </header>
             <section class="bloque">
-            <div class="tabla-scroll">    
-                <div class="suv">
+            <div class="suv">
+                <h3>SUV</h3>
                     <table id="tabla-suv">
+                    <thead>
                         <tr>
                             <th>Modelo</th>
-                            <th>Consumo L/100km</th>
+                            <th>Consumo L/100km
+                            <button class="ordenar" data-categoria="suv">
+                            <img src="./img/flecha-hacia-arriba.png" alt="flecha-arriba">
+                            </button>
+                            </th>
                         </tr>
-                        <tr>
-                            <td>Ford Puma</td>
-                            <td>6.35</td>
-                        </tr>
-                        <tr>
-                            <td>Nissan Qashqai</td>
-                            <td>7.89</td>
-                        </tr>
-                        <tr>
-                            <td>Peugeot 2008</td>
-                            <td>8.22</td>
-                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se ponen los datos de las filas -->
+                    </tbody>
                     </table>
-                </div>    
-            </div>
-        <div class="tabla-scroll">
-            <div class="compacto">
-                <table id="tabla-compacto">
-                    <tr>
-                        <th>Modelo</th>
-                        <th>Consumo L/100km</th>
-                    </tr>
-                    <tr>
-                        <td>Toyota Corolla</td>
-                        <td>5.40</td>
-                    </tr>
-                    <tr>
-                        <td>Honda Civic</td>
-                        <td>6.58</td>
-                    </tr>
-                    <tr>
-                        <td>Mazda 3</td>
-                        <td>6.42</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <div class="tabla-scroll">
-            <div class="utilitario">
-                <table id="tabla-utilitario">
-                    <tr>
-                        <th>Modelo</th>
-                        <th>Consumo L/100km</th>
-                    </tr>
-                    <tr>
-                        <td>Renault Clio</td>
-                        <td>5.2</td>
-                    </tr>
-                    <tr>
-                        <td>Opel Corsa</td>
-                        <td>5.1</td>
-                    </tr>
-                    <tr>
-                        <td>Peugeot 208</td>
-                        <td>4.6</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </section>
-    <section>
-        <div class="miBoton">
-            <button id="miBoton">Hola, JavaScript</button>
+                </div>
+                <div class="compacto">
+                    <h3>Compactos</h3>
+                    <table id="tabla-compacto">
+                        <thead>
+                        <tr>
+                            <th>Modelo</th>
+                            <th>Consumo L/100km
+                            <button class="ordenar" data-categoria="compacto">
+                            <img src="./img/flecha-hacia-arriba.png" alt="flecha-arriba">
+                            </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se ponen los datos de las filas -->
+                    </tbody>
+                    </table>
+                </div>
+                <div class="utilitario">
+                    <h3>Utilitarios</h3>
+                    <table id="tabla-utilitario">
+                        <thead>
+                        <tr>
+                            <th>Modelo</th>
+                            <th>Consumo L/100km
+                            <button class="ordenar" data-categoria="utilitario">
+                            <img src="./img/flecha-hacia-arriba.png" alt="flecha-arriba">
+                            </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se ponen los datos de las filas -->
+                    </tbody>
+                    </table>
+                </div>
         </div>
     </section>
     <section class="formulario">
@@ -93,7 +77,6 @@
                     <li>
                         <label for="name">Modelo de coche:</label>
                         <input type="text" name="name" placeholder="Pon modelo de coche" id="name" required>
-                        
                     </li>  
                     <li>
                         <label for="name">Categoría del coche:</label>
@@ -107,9 +90,6 @@
             </fieldset>
                     <div class="boton">
                         <input id= "envio" type="submit" value="Enviar">
-                    </div>
-                    <div class="ordenar">
-                        <button id="ordenarConsumo">Ordenar por consumo</button>
                     </div>
             <div id="mensaje" class="mensaje"></div>
     </section>
