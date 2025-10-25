@@ -31,81 +31,58 @@ coches = coches.map(coche => ({
 
 // Manejar el envío del formulario
 const form = document.querySelector("form");
-form.addEventListener("submit", function(event) {
 
-    // Prevenir el envío del formulario
-    event.preventDefault();
+form.addEventListener("submit", function (event) {
+  // Prevenir el envío del formulario
+  event.preventDefault();
 
-    // Obtener los valores del formulario
-    const modelo = modeloFormulario.value.trim();
-    let consumo = parseFloat(consumoFormulario.value.trim().replace(",", "."));
-    const categoria = document.getElementById("categoria").value.trim().toLowerCase(); 
-    
-    // Validar el modelo y consumo
-    if (modelo === "") {
-        mostrarMensaje("Por favor, introduce un modelo de coche.", "error");
-        return;
-    }
+  // Obtener los valores del formulario
+  const modelo = modeloFormulario.value.trim();
+  let consumo = parseFloat(consumoFormulario.value.trim().replace(",", "."));
+  const categoria = document.getElementById("categoria").value.trim().toLowerCase();
 
-    if (isNaN (consumo) || consumo < 0 ) {
-        mostrarMensaje("Por favor, introduce un consumo válido.", "error");
-        return;
-    }
+  // Validar el modelo
+  if (modelo === "") {
+    mostrarMensaje("Por favor, introduce un modelo de coche.", "error");
+    return;
+  }
 
-    // Crear una nueva fila en la tabla correspondiente
-    const fila = document.createElement("tr");
+  // Validar el consumo
+  if (isNaN(consumo) || consumo < 0) {
+    mostrarMensaje("Por favor, introduce un consumo válido.", "error");
+    return;
+  }
 
-    // Crear una celda para el modelo 
-    const celdaModelo = document.createElement("td");
+  // Validar la categoría
+  if (!["suv", "compacto", "utilitario"].includes(categoria)) {
+    mostrarMensaje("Por favor, selecciona una categoría válida.", "error");
+    return;
+  }
 
-    // Asignar el valor del modelo a la celda
-    celdaModelo.textContent = modelo;
+  // Normalizar el valor del consumo a dos decimales
+  consumo = Number(consumo.toFixed(2));
 
-    //Crear una celda para el consumo
-    const celdaConsumo = document.createElement("td");
+  // Crear el nuevo coche
+  const nuevoCoche = { modelo, consumo, categoria };
 
-    // Asignar el valor del consumo a la celda
-    celdaConsumo.textContent = consumo;
+  // Añadirlo al array principal
+  coches.push(nuevoCoche);
 
-    // Añadir las celdas a la fila
-    fila.appendChild(celdaModelo);
-    fila.appendChild(celdaConsumo);
+  // Guardar en localStorage
+  localStorage.setItem("coches", JSON.stringify(coches));
 
-    // Añadir la fila a la tabla correspondiente según la categoría
-    if (document.getElementById("categoria").value.toLowerCase() === "suv") {
-        tablaSuv.appendChild(fila);
-    }
-     else if (document.getElementById("categoria").value.toLowerCase() === "compacto") {
-        tablaCompacto.appendChild(fila);
+  // Renderizar todas las tablas desde el array actualizado
+  renderCoches();
 
-    } else if (document.getElementById("categoria").value.toLowerCase() === "utilitario") {
-        tablaUtilitario.appendChild(fila);
+  // Limpiar el formulario
+  modeloFormulario.value = "";
+  consumoFormulario.value = "";
+  document.getElementById("categoria").value = "";
 
-    } else {
-        mostrarMensaje("Por favor, introduce una categoría válida.", "error");
-        modeloFormulario.value = "";
-        return;
-    }
-
-    // Añadir el nuevo coche al array y guardarlo en localStorage
-    const nuevoCoche = { modelo,
-    consumo: Number(consumo.toFixed(2)) ,
-    categoria }; 
-    coches.push(nuevoCoche);
-
-    // Guardar en localStorage
-    localStorage.setItem("coches", JSON.stringify(coches));
-    renderCoches();
-
-    // Limpiar formulario
-    modeloFormulario.value = "";
-    consumoFormulario.value = "";
-    document.getElementById("categoria").value = "";
-
-    // Mostrar mensaje de éxito
-    console.log("Mensaje de éxito activado:", modelo);
-    mostrarMensaje(`El modelo ${modelo} ha sido añadido a la tabla.`, "exito");
+  // Mostrar mensaje de éxito
+  mostrarMensaje(`El modelo ${modelo} ha sido añadido a la tabla.`, "exito");
 });
+
 
 // Función para mostrar mensajes temporales
 function mostrarMensaje(texto,tipo) {
@@ -121,35 +98,45 @@ function mostrarMensaje(texto,tipo) {
     }, 3000);
 }
 function renderCoches() {
-    // Limpiar solo las filas de cada tabla, dejando los <th>
-    // Suponemos que en HTML cada tabla tiene <thead> y <tbody>
+    // Asegurar que el array coches siempre existe y es un array válido
+    if (!Array.isArray(coches)) {
+        coches = [];
+        localStorage.setItem("coches", JSON.stringify([]));
+    }
+
+    // Seleccionar los tbody de cada tabla
     const tbodySuv = document.querySelector("#tabla-suv tbody");
     const tbodyCompacto = document.querySelector("#tabla-compacto tbody");
     const tbodyUtilitario = document.querySelector("#tabla-utilitario tbody");
 
     // Limpiar filas existentes
-    tbodyUtilitario.innerHTML = "";
-    tbodyCompacto.innerHTML = "";
-    tbodySuv.innerHTML = "";
+    [tbodySuv, tbodyCompacto, tbodyUtilitario].forEach(tbody => {
+        if (tbody) tbody.innerHTML = "";
+    });
 
-    // Recorrer coches y añadir filas
+    // Recorrer el array y renderizar cada coche
     coches.forEach(coche => {
+        // Validar que tenga datos válidos antes de pintarlo
+        if (!coche.modelo || isNaN(coche.consumo) || !coche.categoria) return;
+
         const fila = document.createElement("tr");
 
         const celdaModelo = document.createElement("td");
         celdaModelo.textContent = coche.modelo;
 
         const celdaConsumo = document.createElement("td");
-        celdaConsumo.textContent = Number(coche.consumo).toFixed(2).replace(".", ",");
+        celdaConsumo.textContent = Number(coche.consumo)
+            .toFixed(2)
+            .replace(".", ",");
 
         fila.appendChild(celdaModelo);
         fila.appendChild(celdaConsumo);
 
-        // Añadir la fila al tbody correspondiente
-        const cat = String(coche.categoria || "").toLowerCase();
-        if (cat === "suv") tbodySuv.appendChild(fila);
-        else if (cat === "compacto") tbodyCompacto.appendChild(fila);
-        else tbodyUtilitario.appendChild(fila);
+        // Añadir la fila según categoría
+        const cat = String(coche.categoria).toLowerCase();
+        if (cat === "suv" && tbodySuv) tbodySuv.appendChild(fila);
+        else if (cat === "compacto" && tbodyCompacto) tbodyCompacto.appendChild(fila);
+        else if (cat === "utilitario" && tbodyUtilitario) tbodyUtilitario.appendChild(fila);
     });
 }
 renderCoches();
