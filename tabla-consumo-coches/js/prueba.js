@@ -24,10 +24,12 @@ const tablaSuv = document.querySelector("#tabla-suv");
 
 // Limpiar cualquier dato corrupto del localStorage
 coches = coches.map(coche => ({
+    id: coche.id || generarId(),
     modelo: coche.modelo || "",
     consumo: coche.consumo || 0,
     categoria: String(coche.categoria || "")
 }));
+localStorage.setItem("coches", JSON.stringify(coches));
 
 // Manejar el envío del formulario
 const form = document.querySelector("form");
@@ -63,9 +65,9 @@ form.addEventListener("submit", function (event) {
   consumo = Number(consumo.toFixed(2));
 
   // Crear el nuevo coche
-  const nuevoCoche = { modelo, consumo, categoria };
+  const nuevoCoche = { id: generarId(), modelo, consumo, categoria };
 
-  // Añadirlo al array principal
+  // Añadir el coche al array principal
   coches.push(nuevoCoche);
 
   // Guardar en localStorage
@@ -129,9 +131,24 @@ function renderCoches() {
             .toFixed(2)
             .replace(".", ",");
 
+      // Celda con botón eliminar
+      const celdaAcciones = document.createElement("td");
+      const btnEliminar = document.createElement("button");
+      btnEliminar.className = "btn-eliminar";
+      btnEliminar.dataset.id = coche.id;
+      btnEliminar.setAttribute("aria-label", `Eliminar ${coche.modelo}`);
+      btnEliminar.innerHTML = `<img src="./img/bin.png" alt="" aria-hidden="true" width="16" height="16" />`;
+
+        // Estilo opcional pequeño para no romper CSS existente
+        btnEliminar.style.border = "none";
+        btnEliminar.style.background = "transparent";
+        btnEliminar.style.cursor = "pointer";
+
+        celdaAcciones.appendChild(btnEliminar);
+
         fila.appendChild(celdaModelo);
         fila.appendChild(celdaConsumo);
-
+        fila.appendChild(celdaAcciones);
         // Añadir la fila según categoría
         const cat = String(coche.categoria).toLowerCase();
         if (cat === "suv" && tbodySuv) tbodySuv.appendChild(fila);
@@ -213,3 +230,106 @@ toggleModo.addEventListener("change", () => {
   // Guardar preferencia
   localStorage.setItem("modoOscuro", modoActivo);
 });
+
+// Generar simple de id único
+function generarId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+// Función que elimina un coche por su id
+let ultimoEliminado = null;
+let undoTimeoutId = null;
+
+function eliminarCoche(id) {
+  if (!id) return;
+  // Buscar el índice del coche
+  const indice = coches.findIndex(c => c.id === id);
+  if (indice === -1) return;
+
+  // Referencia al objeto y al tr correspondiente
+  const coche = coches[indice];
+
+  // 1) Marcar la fila visualmente (si existe)
+  const btn = document.querySelector(`.btn-eliminar[data-id="${id}"]`);
+  const fila = btn ? btn.closest("tr") : null;
+  if (fila) {
+    fila.classList.add("eliminando");
+  }
+
+  // Guardar temporalmente el coche eliminado para posible undo
+  ultimoEliminado = { coche, indice };
+
+  // Quitar temporalmente del array y re-renderizar (para que no aparezca)
+  coches = coches.filter(c => c.id !== id);
+  renderCoches();
+
+  // Mostrar mensaje con opción "Deshacer"
+  mostrarMensajeConUndo(`Coche ${coche.modelo} eliminado.`, 4000);
+  
+  // Programar la "confirmación" definitiva (si no se deshace)
+  clearTimeout(undoTimeoutId);
+  undoTimeoutId = setTimeout(() => {
+    // Confirmación definitiva: guardar en localStorage y limpiar temporal
+    localStorage.setItem("coches", JSON.stringify(coches));
+    ultimoEliminado = null;
+    undoTimeoutId = null;
+    // Mostrar mensaje final
+    mostrarMensaje('Eliminación confirmada', 'exito');
+  }, 4000);
+}
+
+// Función para mostrar mensaje con opción de deshacer
+function mostrarMensajeConUndo(texto, duracion = 3000) {
+  const mensaje = document.querySelector("#mensaje");
+  mensaje.innerHTML = ''; // limpiar
+  mensaje.textContent = texto; // establecer texto
+
+  // Crear botón undo
+  const undoBtn = document.createElement("button");
+  undoBtn.className = "undo"; // clase para estilos
+  undoBtn.textContent = "Deshacer"; // texto del botón
+
+  // Manejar click en deshacer
+  undoBtn.addEventListener("click", () => {
+    // Si hay undo programado, cancelar
+    if (undoTimeoutId) {
+      clearTimeout(undoTimeoutId);
+      undoTimeoutId = null;
+    }
+    // Reinsertar el coche en su posición original
+    if (ultimoEliminado) {
+      coches.splice(ultimoEliminado.indice, 0, ultimoEliminado.coche); // reinsertar
+      localStorage.setItem("coches", JSON.stringify(coches));
+      renderCoches();
+      mostrarMensaje(`Se ha recuperado ${ultimoEliminado.coche.modelo}`, "exito");
+      ultimoEliminado = null;
+    }
+  });
+
+  // Añadir botón dentro del mensaje
+  mensaje.appendChild(undoBtn);
+  mensaje.classList.add("mostrar");
+
+  // Ocultar el mensaje al terminar duración (si aún está)
+  setTimeout(() => {
+    mensaje.classList.remove("mostrar");
+    // Si no se hizo undo, la eliminación ya quedará confirmada por el timeout de eliminarCoche()
+  }, duracion);
+}
+
+
+// Delegación de eventos para eliminar coches
+document.addEventListener("click", function (e) {
+  // Buscar el botón más cercano al clic que tenga la clase .btn-eliminar
+  const btn = e.target.closest(".btn-eliminar");
+  if (!btn) return; // si no hay botón, se sale
+
+  // Obtener el ID del coche del atributo data-id
+  const id = btn.dataset.id;
+  if (!id) return;
+
+  // Ejecutar la función de eliminación
+  eliminarCoche(id);
+});
+
+
+

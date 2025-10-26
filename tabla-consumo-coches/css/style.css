@@ -408,6 +408,43 @@ body.modo-oscuro h3 {
   padding-left: 8px;
 }
 
+.btn-eliminar {
+  color: #c62828;           /* color del icono */
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-eliminar img { 
+  display: block;
+}
+
+.btn-eliminar:focus { 
+outline: 2px solid #0078ff; outline-offset: 2px; 
+}
+
+/* Animación de salida para la fila */
+tr.eliminando {
+  animation: fadeOutUp 350ms ease forwards;
+}
+/* Definición de la animación */
+@keyframes fadeOutUp {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-10px); height: 0; margin: 0; padding: 0; }
+}
+
+/* Estilo para mensaje de undo (puede ser el mismo #mensaje pero con botón) */
+#mensaje .undo {
+  margin-left: 12px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
 /*Diseño responsive*/
 
 @media (max-width: 880px) {
