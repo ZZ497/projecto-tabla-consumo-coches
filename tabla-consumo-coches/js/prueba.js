@@ -29,22 +29,27 @@ coches = coches.map(coche => ({
     consumo: coche.consumo || 0,
     categoria: String(coche.categoria || "")
 }));
+// Guardar los coches en la base de datos local
 localStorage.setItem("coches", JSON.stringify(coches));
 
 // Manejar el envío del formulario
 const form = document.querySelector("form");
 
+// Evento en el formulario
 form.addEventListener("submit", function (event) {
   // Prevenir el envío del formulario
   event.preventDefault();
 
   // Obtener los valores del formulario
   const modelo = modeloFormulario.value.trim();
+  // Comprobar si hay un modelo repetido
   if (coches.some(c => c.modelo.toLowerCase === modelo.toLowerCase)){ 
   mostrarMensaje ("Modelo repetido", "error");
   return;
   }
+  // Poner comas en los consumos
   let consumo = parseFloat(consumoFormulario.value.trim().replace(",", "."));
+  // Seleccionar la categoría y ponerla en minúscula
   const categoria = document.getElementById("categoria").value.trim().toLowerCase();
 
   // Validar el modelo
@@ -92,10 +97,14 @@ form.addEventListener("submit", function (event) {
 
 // Función para mostrar mensajes temporales
 function mostrarMensaje(texto,tipo) {
+  // Seleccionar el mensaje
     const mensaje = document.querySelector("#mensaje");
+    // Pedir al usuario que escriba un texto
     mensaje.textContent = texto;
+    // Operador ternario para indicar si es color rojo o verde
     mensaje.style.backgroundColor = 
     tipo === "error" ? "rgba(200, 0, 0, 0.95)" : "rgba(0, 200, 0, 0.95)";
+    // Añadir la clase mostrar
     mensaje.classList.add("mostrar");
 
 // Animación que dura 3 segundos    
@@ -106,6 +115,7 @@ function mostrarMensaje(texto,tipo) {
 function renderCoches() {
     // Asegurar que el array coches siempre existe y es un array válido
     if (!Array.isArray(coches)) {
+      // Crear un nuevo array si no existe
         coches = [];
         localStorage.setItem("coches", JSON.stringify([]));
     }
@@ -124,34 +134,42 @@ function renderCoches() {
     coches.forEach(coche => {
         // Validar que tenga datos válidos antes de pintarlo
         if (!coche.modelo || isNaN(coche.consumo) || !coche.categoria) return;
-
+        // Crear una nueva fila
         const fila = document.createElement("tr");
-
+        // Crear una nueva columna y asignar el nombre del modelo a la celda
         const celdaModelo = document.createElement("td");
         celdaModelo.textContent = coche.modelo;
-
+        // Crear una nueva columna y poner el número redondeado a dos y con comas
         const celdaConsumo = document.createElement("td");
         celdaConsumo.textContent = Number(coche.consumo)
             .toFixed(2)
             .replace(".", ",");
 
       // Celda con botón eliminar
+      // Crear una nueva fila
       const celdaAcciones = document.createElement("td");
+      // Crear un botón
       const btnEliminar = document.createElement("button");
+      // Asignar la clase al botón
       btnEliminar.className = "btn-eliminar";
+      // Asignar id del coche en el data-set del botón
       btnEliminar.dataset.id = coche.id;
+      // Asignar el atributo de eliminar un coche
       btnEliminar.setAttribute("aria-label", `Eliminar ${coche.modelo}`);
+      // Añadir la imagen al botón
       btnEliminar.innerHTML = `<img src="./img/bin.png" alt="" aria-hidden="true" width="16" height="16" />`;
 
         // Estilo opcional pequeño para no romper CSS existente
         btnEliminar.style.border = "none";
         btnEliminar.style.background = "transparent";
         btnEliminar.style.cursor = "pointer";
-
+        // Añadir el botón de eliminar a la celda
         celdaAcciones.appendChild(btnEliminar);
-
+        // Añadir el modelo a la fila
         fila.appendChild(celdaModelo);
+        // Añadir el consumo a la fila
         fila.appendChild(celdaConsumo);
+        // Añadir el botón
         fila.appendChild(celdaAcciones);
         // Añadir la fila según categoría
         const cat = String(coche.categoria).toLowerCase();
@@ -160,6 +178,7 @@ function renderCoches() {
         else if (cat === "utilitario" && tbodyUtilitario) tbodyUtilitario.appendChild(fila);
     });
 }
+// Mostrar la tabla
 renderCoches();
 
 // Ordenar por consumo individualmente por categoría 
@@ -169,12 +188,15 @@ let ordenAscendente = { utilitario: true, compacto: true, suv: true };
 
 // Agregar listeners a todos los botones de ordenar
 document.querySelectorAll(".ordenar").forEach(boton => {
+  // Evento al pulsar el motón
   boton.addEventListener("click", () => {
+    // Buscar la categoría
     const categoria = boton.getAttribute("data-categoria");
 
     // Crear un índice para saber qué posiciones ocupan los coches de esta categoría
     let indicesCategoria = [];
     coches.forEach((c, index) => {
+      // Si un coche coincide con la categoría, se lanza el coche al índice de la categoría
       if (c.categoria === categoria) {
         indicesCategoria.push(index);
       }
@@ -182,7 +204,7 @@ document.querySelectorAll(".ordenar").forEach(boton => {
 
     // Extraer y ordenar solo los coches de esa categoría
     let cochesCategoria = indicesCategoria.map(i => coches[i]);
-    
+    // Ordenar los coches de mayor a menor con un operador ternario
     cochesCategoria.sort((a, b) => {
       return ordenAscendente[categoria]
         ? a.consumo - b.consumo
@@ -203,7 +225,7 @@ document.querySelectorAll(".ordenar").forEach(boton => {
       coches[indiceOriginal] = cochesCategoria[i];
     });
 
-    // Guardar en localStorage y renderizar filas
+    // Guardar en localStorage y mostrar filas
     localStorage.setItem("coches", JSON.stringify(coches));
     renderCoches();
 
@@ -213,30 +235,40 @@ document.querySelectorAll(".ordenar").forEach(boton => {
 });
 
 // Modo oscuro
+// Seleccionar el toogle
 const toggleModo = document.getElementById("modoOscuroToggle");
+// Seleccionar el texto del modo
 const textoModo = document.getElementById("modoTexto");
 
 // Comprobar preferencia guardada
 const modoGuardado = localStorage.getItem("modoOscuro");
+// Si el modo es verdadero, se pone el modo oscuro
 if (modoGuardado === "true") {
+  // Se añade la clase de modo oscuro
   document.body.classList.add("modo-oscuro");
+  // Se valida el toggle
   toggleModo.checked = true;
+  // Se pone el texto del span en "Modo oscuro"
   textoModo.textContent = "Modo oscuro";
 }
 
 // Cambiar modo al pulsar
 toggleModo.addEventListener("change", () => {
+  // Se selecciona el modo oscuro 
   document.body.classList.toggle("modo-oscuro");
-
+  // Crear una variable que contenga el estado del modo oscuro (boolean)
   const modoActivo = document.body.classList.contains("modo-oscuro");
+  // Cambiar si está el modo oscuro activo o no
   textoModo.textContent = modoActivo ? "Modo oscuro" : "Modo claro";
 
-  // Guardar preferencia
+  // Guardar preferencia en la base de datos local
   localStorage.setItem("modoOscuro", modoActivo);
 });
 
 // Detectar el modo del sistema por defecto
+// Detectar si la ventana es oscura, ponerla en modo oscuro
 const sistemaOscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
+// Si no hay modo guardado y el sistema del usuario es oscuro, añadir la clase de modo oscuro y poner el toogle a verdadero
 if (modoGuardado === null && sistemaOscuro) {
   document.body.classList.add("modo-oscuro");
   toggleModo.checked = true;
@@ -248,15 +280,19 @@ function generarId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 // Función que elimina un coche por su id
+// Variable que indica si el coche es el último eliminado
 let ultimoEliminado = null;
+// Variable que indica si el tiempo del undo ha pasado 
 let undoTimeoutId = null;
 
+// Mostrar error si no hay id
 function eliminarCoche(id) {
   if (!id) {
     return;
 }
   // Buscar el índice del coche
   const indice = coches.findIndex(c => c.id === id);
+  // Mostrar error si hay un id negativo
   if (indice === -1){
      return;
   }
@@ -264,9 +300,11 @@ function eliminarCoche(id) {
   // Referencia al objeto y al tr correspondiente
   const coche = coches[indice];
 
-  // 1) Marcar la fila visualmente (si existe)
+  // Marcar la fila visualmente si existe
   const btn = document.querySelector(`.btn-eliminar[data-id="${id}"]`);
+  // Mostar la fila si el botón existe y si no, ponerlo a nulo
   const fila = btn ? btn.closest("tr") : null;
+  // Si fila es verdadero, mostrar eliminado
   if (fila) {
     fila.classList.add("eliminando");
   }
@@ -274,7 +312,7 @@ function eliminarCoche(id) {
   // Guardar temporalmente el coche eliminado para posible undo
   ultimoEliminado = { coche, indice };
 
-  // Quitar temporalmente del array y re-renderizar (para que no aparezca)
+  // Quitar temporalmente del array y re-renderizar para que no aparezca
   coches = coches.filter(c => c.id !== id);
   renderCoches();
 
@@ -286,6 +324,7 @@ function eliminarCoche(id) {
   undoTimeoutId = setTimeout(() => {
     // Confirmación definitiva: guardar en localStorage y limpiar temporal
     localStorage.setItem("coches", JSON.stringify(coches));
+    // Poner las variables temporales en null, ya que se ha realizado el borrado
     ultimoEliminado = null;
     undoTimeoutId = null;
     // Mostrar mensaje final
@@ -309,14 +348,17 @@ function mostrarMensajeConUndo(texto, duracion = 3000) {
     // Si hay undo programado, cancelar
     if (undoTimeoutId) {
       clearTimeout(undoTimeoutId);
+      // Cancelar el undo
       undoTimeoutId = null;
     }
     // Reinsertar el coche en su posición original
     if (ultimoEliminado) {
       coches.splice(ultimoEliminado.indice, 0, ultimoEliminado.coche); // reinsertar
+      // Guardar y mostrar la tabla de coches con el valor reinsertado
       localStorage.setItem("coches", JSON.stringify(coches));
       renderCoches();
       mostrarMensaje(`Se ha recuperado ${ultimoEliminado.coche.modelo}`, "exito");
+      // Poner la variable en nulo, ya que se ha cancelado la operación
       ultimoEliminado = null;
     }
   });
@@ -346,6 +388,3 @@ document.addEventListener("click", function (e) {
   // Ejecutar la función de eliminación
   eliminarCoche(id);
 });
-
-
-
