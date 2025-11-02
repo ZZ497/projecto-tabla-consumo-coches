@@ -40,6 +40,10 @@ form.addEventListener("submit", function (event) {
 
   // Obtener los valores del formulario
   const modelo = modeloFormulario.value.trim();
+  if (coches.some(c => c.modelo.toLowerCase === modelo.toLowerCase)){ 
+  mostrarMensaje ("Modelo repetido", "error");
+  return;
+  }
   let consumo = parseFloat(consumoFormulario.value.trim().replace(",", "."));
   const categoria = document.getElementById("categoria").value.trim().toLowerCase();
 
@@ -231,6 +235,14 @@ toggleModo.addEventListener("change", () => {
   localStorage.setItem("modoOscuro", modoActivo);
 });
 
+// Detectar el modo del sistema por defecto
+const sistemaOscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
+if (modoGuardado === null && sistemaOscuro) {
+  document.body.classList.add("modo-oscuro");
+  toggleModo.checked = true;
+}
+
+
 // Generar simple de id único
 function generarId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -240,10 +252,14 @@ let ultimoEliminado = null;
 let undoTimeoutId = null;
 
 function eliminarCoche(id) {
-  if (!id) return;
+  if (!id) {
+    return;
+}
   // Buscar el índice del coche
   const indice = coches.findIndex(c => c.id === id);
-  if (indice === -1) return;
+  if (indice === -1){
+     return;
+  }
 
   // Referencia al objeto y al tr correspondiente
   const coche = coches[indice];
