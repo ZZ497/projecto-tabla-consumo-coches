@@ -343,6 +343,14 @@ button.ordenar img {
   vertical-align: middle;
   filter: brightness(0);
 }
+/* Ordenar por nombre */
+th button.ordenar-nombre {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding-left: 4px;
+  vertical-align: middle;
+}
 
 /* Ajuste de iconos en modo oscuro */
 body.modo-oscuro button.ordenar img {

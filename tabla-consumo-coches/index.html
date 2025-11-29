@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
-    <title>Document</title>
+    <title>Tabla consumo</title>
 </head>
 <body>
     <header>
@@ -12,13 +12,12 @@
             <h2>Consumo de coches</h2>
         </div>
         <div class="modo">
-        <label class="switch">
-            <input type="checkbox" id="modoOscuroToggle">
-            <span class="slider"></span>
-        </label>
-        <span id="modoTexto">Modo claro</span>
-</div>
-
+            <label class="switch">
+                <input type="checkbox" id="modoOscuroToggle">
+                <span class="slider"></span>
+            </label>
+            <span id="modoTexto">Modo claro</span>
+        </div>
     </header>
             <section class="bloque">
             <div class="suv">
@@ -26,7 +25,12 @@
                     <table id="tabla-suv">
                     <thead>
                         <tr>
-                            <th>Modelo</th>
+                            <th>
+                            Modelo
+                            <button class="ordenar-nombre" data-categoria="suv">
+                            <img src="./img/flecha-hacia-arriba.png" alt="Ordenar por nombre" width="14" height="14">
+                            </button>
+                            </th>
                             <th>Consumo L/100km
                             <button class="ordenar" data-categoria="suv">
                             <img src="./img/flecha-hacia-arriba.png" alt="flecha-arriba">
@@ -45,7 +49,12 @@
                     <table id="tabla-compacto">
                         <thead>
                         <tr>
-                            <th>Modelo</th>
+                            <th>
+                            Modelo
+                            <button class="ordenar-nombre" data-categoria="compacto">
+                            <img src="./img/flecha-hacia-arriba.png" alt="Ordenar por nombre" width="14" height="14">
+                            </button>
+                            </th>
                             <th>Consumo L/100km
                             <button class="ordenar" data-categoria="compacto">
                             <img src="./img/flecha-hacia-arriba.png" alt="flecha-arriba">
@@ -60,11 +69,16 @@
                     </table>
                 </div>
                 <div class="utilitario">
-                    <h3>Utilitarios</h3>
+                    <h3>Utilitarios
+                    </h3>
                     <table id="tabla-utilitario">
                         <thead>
                         <tr>
-                            <th>Modelo</th>
+                            <th>Modelo
+                            <button class="ordenar-nombre" data-categoria="utilitario">
+                            <img src="./img/flecha-hacia-arriba.png" alt="Ordenar por nombre" width="14" height="14">
+                            </button>
+                            </th>
                             <th>Consumo L/100km
                             <button class="ordenar" data-categoria="utilitario">
                             <img src="./img/flecha-hacia-arriba.png" alt="flecha-arriba">
